@@ -17125,9 +17125,9 @@ Opal.modules["enemy"] = function(Opal) {
   function $rb_ge(lhs, rhs) {
     return (typeof(lhs) === 'number' && typeof(rhs) === 'number') ? lhs >= rhs : lhs['$>='](rhs);
   }
-  var self = Opal.top, $scope = Opal, nil = Opal.nil, $breaker = Opal.breaker, $slice = Opal.slice, $klass = Opal.klass, $hash2 = Opal.hash2;
+  var self = Opal.top, $scope = Opal, nil = Opal.nil, $breaker = Opal.breaker, $slice = Opal.slice, $klass = Opal.klass, $range = Opal.range, $hash2 = Opal.hash2;
 
-  Opal.add_stubs(['$attr_reader', '$sample', '$vertices', '$grid', '$x', '$y', '$rand', '$neighbors', '$die', '$near_another_enemy', '$alive', '$d_x', '$d_y', '$!', '$-@', '$any?', '$distance', '$reject', '$==', '$enemies', '$draw_circle', '$to_i']);
+  Opal.add_stubs(['$attr_reader', '$sample', '$[]', '$vertices', '$grid', '$x', '$y', '$rand', '$neighbors', '$die', '$near_another_enemy', '$alive', '$d_x', '$d_y', '$!', '$-@', '$any?', '$distance', '$reject', '$==', '$enemies', '$draw_circle', '$to_i']);
   return (function($base, $super) {
     function $Enemy(){};
     var self = $Enemy = $klass($base, $super, 'Enemy', $Enemy);
@@ -17141,13 +17141,13 @@ Opal.modules["enemy"] = function(Opal) {
       var $a, self = this;
 
       self.game = game;
-      self.origin = self.game.$grid().$vertices().$sample();
+      self.origin = self.game.$grid().$vertices()['$[]']($range(1, -1, false)).$sample();
       self.location = self.origin;
       $a = [self.location.$x(), self.location.$y()], self.x = $a[0], self.y = $a[1];
       self.at_vertex = true;
-      self.max_life = 50;
+      self.max_life = 25;
       self.life = self.max_life;
-      return self.speed = $rb_plus(0.6, $rb_divide(self.$rand(), 1.25));
+      return self.speed = $rb_plus(1.2, $rb_divide(self.$rand(), 2.5));
     };
 
     def.$update = function() {
@@ -17264,14 +17264,14 @@ Opal.modules["player"] = function(Opal) {
   function $rb_plus(lhs, rhs) {
     return (typeof(lhs) === 'number' && typeof(rhs) === 'number') ? lhs + rhs : lhs['$+'](rhs);
   }
+  function $rb_le(lhs, rhs) {
+    return (typeof(lhs) === 'number' && typeof(rhs) === 'number') ? lhs <= rhs : lhs['$<='](rhs);
+  }
   function $rb_gt(lhs, rhs) {
     return (typeof(lhs) === 'number' && typeof(rhs) === 'number') ? lhs > rhs : lhs['$>'](rhs);
   }
   function $rb_minus(lhs, rhs) {
     return (typeof(lhs) === 'number' && typeof(rhs) === 'number') ? lhs - rhs : lhs['$-'](rhs);
-  }
-  function $rb_le(lhs, rhs) {
-    return (typeof(lhs) === 'number' && typeof(rhs) === 'number') ? lhs <= rhs : lhs['$<='](rhs);
   }
   function $rb_lt(lhs, rhs) {
     return (typeof(lhs) === 'number' && typeof(rhs) === 'number') ? lhs < rhs : lhs['$<'](rhs);
@@ -17281,7 +17281,7 @@ Opal.modules["player"] = function(Opal) {
   }
   var self = Opal.top, $scope = Opal, nil = Opal.nil, $breaker = Opal.breaker, $slice = Opal.slice, $klass = Opal.klass, $hash2 = Opal.hash2;
 
-  Opal.add_stubs(['$[]', '$vertices', '$grid', '$x', '$y', '$draw_circle', '$check_user_input', '$place_edge', '$d_x', '$d_y', '$pick_up_edge', '$length', '$neighbors', '$===', '$right=', '$left=', '$down=', '$up=', '$-@', '$button_down?', '$move_right', '$move_left', '$move_down', '$move_up', '$right', '$vertex_to_right_of', '$cell_draw_size', '$can_have_right', '$left', '$vertex_to_left_of', '$can_have_left', '$down', '$vertex_below', '$can_have_down', '$up', '$vertex_above', '$can_have_up']);
+  Opal.add_stubs(['$attr_reader', '$[]', '$vertices', '$grid', '$x', '$y', '$draw_circle', '$check_user_input', '$place_edge', '$d_x', '$d_y', '$check_if_dead', '$pick_up_edge', '$any?', '$distance', '$enemies', '$length', '$neighbors', '$===', '$right=', '$left=', '$down=', '$up=', '$-@', '$button_down?', '$move_right', '$move_left', '$move_down', '$move_up', '$right', '$vertex_to_right_of', '$cell_draw_size', '$can_have_right', '$left', '$vertex_to_left_of', '$can_have_left', '$down', '$vertex_below', '$can_have_down', '$up', '$vertex_above', '$can_have_up']);
   return (function($base, $super) {
     function $Player(){};
     var self = $Player = $klass($base, $super, 'Player', $Player);
@@ -17289,6 +17289,8 @@ Opal.modules["player"] = function(Opal) {
     var def = self.$$proto, $scope = self.$$scope;
 
     def.game = def.x = def.y = def.grabbing = def.at_vertex = def.previous = def.location = def.edges_to_place = def.previous_direction = def.distance_until_destination_x = def.speed = def.destination = def.distance_until_destination_y = def.placing = nil;
+    self.$attr_reader("alive");
+
     def.$initialize = function(game) {
       var self = this;
 
@@ -17301,6 +17303,7 @@ Opal.modules["player"] = function(Opal) {
       self.distance_until_destination_x = 0;
       self.distance_until_destination_y = 0;
       self.edges_to_place = 0;
+      self.alive = true;
       self.at_vertex = true;
       self.location = self.game.$grid().$vertices()['$[]'](0);
       return self.distination = nil;
@@ -17315,13 +17318,27 @@ Opal.modules["player"] = function(Opal) {
     };
 
     def.$update = function() {
-      var self = this;
+      var $a, self = this;
 
       self.$check_user_input();
       self.$place_edge();
       self.x = $rb_plus(self.x, self.$d_x());
       self.y = $rb_plus(self.y, self.$d_y());
+      if ((($a = self.$check_if_dead()) !== nil && (!$a.$$is_boolean || $a == true))) {
+        self.alive = false};
       return self.$pick_up_edge();
+    };
+
+    def.$check_if_dead = function() {
+      var $a, $b, TMP_1, self = this, x_offset = nil, y_offset = nil;
+
+      x_offset = self.game.$grid().$vertices()['$[]'](0).$x();
+      y_offset = self.game.$grid().$vertices()['$[]'](0).$y();
+      return ($a = ($b = self.game.$enemies())['$any?'], $a.$$p = (TMP_1 = function(e){var self = TMP_1.$$s || this;
+        if (self.x == null) self.x = nil;
+        if (self.y == null) self.y = nil;
+if (e == null) e = nil;
+      return $rb_le($scope.get('Dare').$distance($rb_plus(self.x, x_offset), $rb_plus(self.y, y_offset), e.$x(), e.$y()), 3)}, TMP_1.$$s = self, TMP_1), $a).call($b);
     };
 
     def.$place_edge = function() {
@@ -17542,7 +17559,7 @@ Opal.modules["player"] = function(Opal) {
   Opal.dynamic_require_severity = "error";
   var self = Opal.top, $scope = Opal, nil = Opal.nil, $breaker = Opal.breaker, $slice = Opal.slice, $klass = Opal.klass, $hash2 = Opal.hash2;
 
-  Opal.add_stubs(['$require', '$attr_reader', '$new', '$[]', '$times', '$<<', '$draw', '$each', '$to_proc', '$delete_if', '$update', '$run!']);
+  Opal.add_stubs(['$require', '$attr_reader', '$new', '$[]', '$times', '$<<', '$draw', '$alive', '$each', '$to_proc', '$!', '$delete_if', '$update', '$run!']);
   self.$require("dare");
   self.$require("isolation"+ '/../' + "grid");
   self.$require("isolation"+ '/../' + "vertex");
@@ -17554,7 +17571,7 @@ Opal.modules["player"] = function(Opal) {
 
     var def = self.$$proto, $scope = self.$$scope, TMP_1;
 
-    def.grid = def.player = def.enemies = nil;
+    def.grid = def.player = def.enemies = def.font = nil;
     self.$attr_reader("grid", "enemies");
 
     def.$initialize = TMP_1 = function() {
@@ -17566,6 +17583,7 @@ Opal.modules["player"] = function(Opal) {
       self.grid = $scope.get('Grid').$new(self, $hash2(["width", "height", "cell_draw_size"], {"width": level['$[]']("grid")['$[]']("width"), "height": level['$[]']("grid")['$[]']("height"), "cell_draw_size": level['$[]']("grid")['$[]']("cell_draw_size")}));
       self.enemies = [];
       self.player = $scope.get('Player').$new(self);
+      self.font = (($scope.get('Dare')).$$scope.get('Font')).$new($hash2(["font", "size", "color"], {"font": "Arial", "size": 72, "color": "#333"}));
       return ($a = ($b = level['$[]']("enemies")).$times, $a.$$p = (TMP_2 = function(){var self = TMP_2.$$s || this;
         if (self.enemies == null) self.enemies = nil;
 
@@ -17576,8 +17594,15 @@ Opal.modules["player"] = function(Opal) {
       var $a, $b, self = this;
 
       self.grid.$draw();
-      self.player.$draw();
-      return ($a = ($b = self.enemies).$each, $a.$$p = "draw".$to_proc(), $a).call($b);
+      if ((($a = self.player.$alive()) !== nil && (!$a.$$is_boolean || $a == true))) {
+        self.player.$draw()};
+      ($a = ($b = self.enemies).$each, $a.$$p = "draw".$to_proc(), $a).call($b);
+      if ((($a = self.player.$alive()['$!']()) !== nil && (!$a.$$is_boolean || $a == true))) {
+        console.log('game over');
+        return self.font.$draw("GAME OVER", 10, 10);
+        } else {
+        return nil
+      };
     };
 
     return (def.$update = function() {
